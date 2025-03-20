@@ -24,6 +24,7 @@ export interface TopLevelVariableSettings {
     defaultDatasource: string;
     defaultCluster?: string;
     clusterFilter?: string;
+    pluginId?: string;
 }
 
 export function createTopLevelVariables(props: JsonData, additionalVariables?: Array<SceneVariable<SceneVariableState>>) {
@@ -33,6 +34,7 @@ export function createTopLevelVariables(props: JsonData, additionalVariables?: A
         defaultDatasource: props.defaultDatasource || 'prometheus',
         defaultCluster: props.defaultCluster,
         clusterFilter: props.clusterFilter,
+        pluginId: props.pluginId,
     }
 
     return new SceneVariableSet({
@@ -40,7 +42,7 @@ export function createTopLevelVariables(props: JsonData, additionalVariables?: A
             new DataSourceVariable({
                 name: 'datasource',
                 label: 'Datasource',
-                pluginId: 'victoriametrics-metrics-datasource',
+                pluginId: settings.pluginId,
                 regex: settings.datasource,
                 value: settings.defaultDatasource,
             }),
