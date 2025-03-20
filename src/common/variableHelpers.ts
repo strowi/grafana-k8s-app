@@ -24,6 +24,7 @@ export interface TopLevelVariableSettings {
     defaultDatasource: string;
     defaultCluster?: string;
     clusterFilter?: string;
+    pluginId?: string;
 }
 
 export function createTopLevelVariables(props: JsonData, additionalVariables?: Array<SceneVariable<SceneVariableState>>) {
@@ -33,6 +34,7 @@ export function createTopLevelVariables(props: JsonData, additionalVariables?: A
         defaultDatasource: props.defaultDatasource || 'prometheus',
         defaultCluster: props.defaultCluster,
         clusterFilter: props.clusterFilter,
+        pluginId: props.pluginId,
     }
 
     return new SceneVariableSet({
@@ -40,7 +42,7 @@ export function createTopLevelVariables(props: JsonData, additionalVariables?: A
             new DataSourceVariable({
                 name: 'datasource',
                 label: 'Datasource',
-                pluginId: 'prometheus',
+                pluginId: settings.pluginId,
                 regex: settings.datasource,
                 value: settings.defaultDatasource,
             }),
@@ -59,8 +61,8 @@ export function createClusterVariable(defaultCluster?: string, clusterFilter?: s
             type: 'prometheus',
         },
         query: {
-          refId: 'cluster',
-          query: clusterFilter ? `label_values(${clusterFilter}, cluster)` : 'label_values(kube_namespace_status_phase, cluster)',
+            refId: 'cluster',
+            query: clusterFilter ? `label_values(${clusterFilter}, cluster)` : 'label_values(kube_namespace_status_phase, cluster)',
         },
         value: defaultCluster,
     })

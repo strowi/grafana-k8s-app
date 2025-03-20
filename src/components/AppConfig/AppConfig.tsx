@@ -124,6 +124,7 @@ export type EventQuery = {
 export type JsonData = {
   datasource?: string;
   defaultDatasource?: string;
+  pluginId?: string;
   defaultCluster?: string;
   clusterFilter?: string;
   analyticsEnabled?: boolean;
@@ -138,6 +139,7 @@ type State = {
   // The regex pattern to match datasource
   datasource: string;
   defaultDatasource?: string;
+  pluginId?: string;
   defaultCluster?: string;
   clusterFilter?: string;
   prometheusDatasources?: Array<DataSourceInstanceSettings<DataSourceJsonData>>;
@@ -162,7 +164,7 @@ const DEFAULT_ANALYTIC_OPTIONS: AnalyticsOptions = {
   flatten: false,
 }
 
-interface Props extends PluginConfigPageProps<AppPluginMeta<JsonData>> {}
+interface Props extends PluginConfigPageProps<AppPluginMeta<JsonData>> { }
 
 export const AppConfig = ({ plugin }: Props) => {
   const s = useStyles2(getStyles);
@@ -170,6 +172,7 @@ export const AppConfig = ({ plugin }: Props) => {
   const [state, setState] = useState<State>({
     datasource: jsonData?.datasource || 'prometheus',
     defaultDatasource: jsonData?.defaultDatasource || '',
+    pluginId: jsonData?.pluginId || 'prometheus',
     defaultCluster: jsonData?.defaultCluster || '',
     clusterFilter: jsonData?.clusterFilter || '',
     analyticsEnabled: jsonData?.analyticsEnabled || false,
@@ -182,6 +185,13 @@ export const AppConfig = ({ plugin }: Props) => {
     eventQueries: jsonData?.eventQueries || createDefaultEventQueries(),
     logsEnabled: jsonData?.logsEnabled || false,
   });
+
+  const onChangePluginId = (event: ChangeEvent<HTMLInputElement>) => {
+    setState({
+      ...state,
+      pluginId: event.target.value,
+    });
+  };
 
   const onChangeDatasource = (event: ChangeEvent<HTMLInputElement>) => {
     setState({
@@ -324,7 +334,7 @@ export const AppConfig = ({ plugin }: Props) => {
 
     const lokiDatasources = getDataSourceSrv()
       .getList({ type: 'loki' });
-    
+
     const matchingNames: string[] = []
     prometheusDatasources.forEach((ds) => {
       if (ds.name.match(state.datasource)) {
@@ -348,6 +358,7 @@ export const AppConfig = ({ plugin }: Props) => {
         datasource: state.datasource,
         defaultDatasource: state.defaultDatasource,
         defaultCluster: state.defaultCluster,
+        pluginId: state.pluginId,
         clusterFilter: state.clusterFilter,
         analyticsEnabled: state.analyticsEnabled,
         analytics: state.analytics,
@@ -433,6 +444,16 @@ export const AppConfig = ({ plugin }: Props) => {
             onChange={onChangeDefaultDatasource}
           />
         </Field>
+        <Field label="Default pluginId" description="" className={s.marginTop}>
+          <Input
+            width={60}
+            id="pluginId"
+            label={`Name of the pluginId`}
+            value={state?.pluginId}
+            placeholder={`E.g.: prometheus`}
+            onChange={onChangePluginId}
+          />
+        </Field>
         <Field label="Default cluster" description="" className={s.marginTop}>
           <Input
             width={60}
@@ -455,7 +476,7 @@ export const AppConfig = ({ plugin }: Props) => {
         </Field>
       </FieldSet>
       <FieldSet label="Logs & Events settings" className={s.marginTopXl}>
-        <Alert  severity="warning" title="Ruler settings">
+        <Alert severity="warning" title="Ruler settings">
           <p>EXPERIMENTAL: Allows configuring Loki queries for pages.</p>
         </Alert>
         <Field label="Enable Logs & Events" description="Enable displaying of logs and events.">
@@ -466,7 +487,7 @@ export const AppConfig = ({ plugin }: Props) => {
           />
         </Field>
         <TabbedContainer
-          onClose={() => {}}
+          onClose={() => { }}
           tabs={[
             {
               label: 'Logs',
@@ -549,7 +570,7 @@ export const AppConfig = ({ plugin }: Props) => {
         </TabbedContainer>
       </FieldSet>
       <FieldSet label="Ruler settings" className={s.marginTopXl}>
-        <Alert  severity="warning" title="Ruler settings">
+        <Alert severity="warning" title="Ruler settings">
           <p>EXPERIMENTAL: Allows mapping clusters to rulers to fetch additional data for alerts from the rulers.</p>
         </Alert>
         <Button
@@ -593,7 +614,7 @@ export const AppConfig = ({ plugin }: Props) => {
         }
       </FieldSet>
       <FieldSet label="Analytics settings" className={s.marginTopXl}>
-        <Alert  severity="warning" title="Analytics settings">
+        <Alert severity="warning" title="Analytics settings">
           <p>EXPERIMENTAL: Analytics integration allows you to send data to an analytics server. This data can be used to monitor the plugin usage locally. No data will be sent to third parties.</p>
           <p>Original source code for analytics: <Link href="https://github.com/MacroPower/macropower-analytics-panel">MacroPower/macropower-analytics-panel</Link></p>
         </Alert>
@@ -617,15 +638,15 @@ export const AppConfig = ({ plugin }: Props) => {
         </Field>
       </FieldSet>
       <div className={s.marginTop}>
-          <Button
-            type="submit"
-            data-testid={testIds.appConfig.submit}
-            onClick={onSave}
-            disabled={Boolean(!state.datasource)}
-          >
-            Save
-          </Button>
-        </div>
+        <Button
+          type="submit"
+          data-testid={testIds.appConfig.submit}
+          onClick={onSave}
+          disabled={Boolean(!state.datasource)}
+        >
+          Save
+        </Button>
+      </div>
     </div>
   );
 };
