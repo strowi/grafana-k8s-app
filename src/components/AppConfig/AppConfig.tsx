@@ -444,7 +444,7 @@ export const AppConfig = ({ plugin }: Props) => {
             onChange={onChangeDefaultDatasource}
           />
         </Field>
-        <Field label="Default pluginId" description="" className={s.marginTop}>
+        <Field label="Default pluginId" description="Allows changing the pluginId to support different datasource-plugins (eg: victoriametrics-metrics-datasource)" className={s.marginTop}>
           <Input
             width={60}
             id="pluginId"
